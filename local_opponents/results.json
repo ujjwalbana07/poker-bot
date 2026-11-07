@@ -1,0 +1,1192 @@
+{
+  "phases": {
+    "before": [
+      {
+        "bot": "tight_passive",
+        "seed": 1,
+        "result": "CHOP",
+        "bb": 0.357,
+        "ci": [
+          -0.17339200635190766,
+          0.8873920063519076
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.848662,
+          1.505824
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5586017919995356,
+        "avg_ms": 1.304049074074074,
+        "passed": false
+      },
+      {
+        "bot": "tight_passive",
+        "seed": 7,
+        "result": "CHOP",
+        "bb": 0.021,
+        "ci": [
+          -0.4773228217622479,
+          0.5193228217622479
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.46872,
+          1.837591
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4471045409954968,
+        "avg_ms": 1.2920818488943489,
+        "passed": false
+      },
+      {
+        "bot": "tight_passive",
+        "seed": 21,
+        "result": "CHOP",
+        "bb": 0.447,
+        "ci": [
+          -0.010086021418919067,
+          0.904086021418919
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.492725,
+          1.533629
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.49514370900578797,
+        "avg_ms": 1.2530104265402844,
+        "passed": false
+      },
+      {
+        "bot": "tight_passive",
+        "seed": 99,
+        "result": "CHOP",
+        "bb": -0.006,
+        "ci": [
+          -0.4582684995642501,
+          0.4462684995642501
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          2.013796,
+          1.421788
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.44855637500586454,
+        "avg_ms": 1.316016620498615,
+        "passed": false
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 0.899,
+        "ci": [
+          0.0831028658145857,
+          1.7148971341854145
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.683031,
+          1.55356
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4956368749990361,
+        "avg_ms": 1.1996060479955613,
+        "passed": true
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 7,
+        "result": "CHOP",
+        "bb": 0.002,
+        "ci": [
+          -0.7942209565473929,
+          0.7982209565473929
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          2.18975,
+          1.558496
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4940015000029234,
+        "avg_ms": 1.2827911383586457,
+        "passed": false
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 21,
+        "result": "CHOP",
+        "bb": 0.383,
+        "ci": [
+          -0.4567676733971622,
+          1.2227676733971622
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          2.205274,
+          2.73998
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4987100830039708,
+        "avg_ms": 1.4817315796916983,
+        "passed": false
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 0.839,
+        "ci": [
+          0.021698895276543673,
+          1.6563011047234562
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.867108,
+          2.562462
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.49962637499993434,
+        "avg_ms": 1.383488327382587,
+        "passed": true
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 1,
+        "result": "CHOP",
+        "bb": 1.061,
+        "ci": [
+          -0.5527874003659776,
+          2.6747874003659775
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          2.153204,
+          1.939539
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5442797919968143,
+        "avg_ms": 1.3232066815144767,
+        "passed": false
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 7,
+        "result": "CHOP",
+        "bb": -0.761,
+        "ci": [
+          -2.354716296333698,
+          0.8327162963336979
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.577008,
+          2.031473
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.9895704169975943,
+        "avg_ms": 1.2428206988451287,
+        "passed": false
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 21,
+        "result": "CHOP",
+        "bb": 1.1,
+        "ci": [
+          -0.5096152266855509,
+          2.709615226685551
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.515424,
+          1.233334
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5541307500025141,
+        "avg_ms": 1.09409207009207,
+        "passed": false
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 99,
+        "result": "CHOP",
+        "bb": 1.072,
+        "ci": [
+          -0.5089455587101046,
+          2.6529455587101047
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.138815,
+          1.182525
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.9866636669976288,
+        "avg_ms": 1.0260613792097975,
+        "passed": false
+      },
+      {
+        "bot": "benchmark",
+        "seed": 1,
+        "result": "CHOP",
+        "bb": 0.261,
+        "ci": [
+          -0.23409571168626586,
+          0.7560957116862659
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.456013,
+          1.925973
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.49991762499848846,
+        "avg_ms": 1.2527075965483094,
+        "passed": false
+      },
+      {
+        "bot": "benchmark",
+        "seed": 7,
+        "result": "CHOP",
+        "bb": 0.367,
+        "ci": [
+          -0.1131733165759542,
+          0.8471733165759542
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.699613,
+          2.482311
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.43757045800157357,
+        "avg_ms": 1.3914642547033285,
+        "passed": false
+      },
+      {
+        "bot": "benchmark",
+        "seed": 21,
+        "result": "CHOP",
+        "bb": -0.28,
+        "ci": [
+          -0.7008193382860103,
+          0.14081933828601023
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.819279,
+          1.976431
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.44319375000486616,
+        "avg_ms": 1.3335589788732392,
+        "passed": false
+      },
+      {
+        "bot": "benchmark",
+        "seed": 99,
+        "result": "CHOP",
+        "bb": 0.384,
+        "ci": [
+          -0.10283116746569954,
+          0.8708311674656996
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          2.515011,
+          1.922585
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.389295166998636,
+        "avg_ms": 1.4290800742220955,
+        "passed": false
+      }
+    ],
+    "after": [
+      {
+        "bot": "tight_passive",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 0.523,
+        "ci": [
+          0.003804765540856403,
+          1.0421952344591436
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.339255,
+          1.493475
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.42228887499368284,
+        "avg_ms": 1.2778785270205644,
+        "passed": true
+      },
+      {
+        "bot": "tight_passive",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 1.089,
+        "ci": [
+          0.5946419332259414,
+          1.5833580667740585
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.977367,
+          1.174973
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 1.2930824169961852,
+        "avg_ms": 1.1495707111615097,
+        "passed": true
+      },
+      {
+        "bot": "tight_passive",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 1.113,
+        "ci": [
+          0.6319308925988951,
+          1.5940691074011049
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.227435,
+          1.099877
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4578872920028516,
+        "avg_ms": 1.1832743506493506,
+        "passed": true
+      },
+      {
+        "bot": "tight_passive",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 0.574,
+        "ci": [
+          0.10026778533689551,
+          1.0477322146631045
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.062717,
+          1.029366
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.45910308299789904,
+        "avg_ms": 1.1320862782553327,
+        "passed": true
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 1.925,
+        "ci": [
+          1.0738905899780993,
+          2.776109410021901
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.184765,
+          1.250143
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.518192541996541,
+        "avg_ms": 1.1258115138592748,
+        "passed": true
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 1.721,
+        "ci": [
+          0.8971052938018711,
+          2.544894706198129
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.368241,
+          1.049668
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4710822080014623,
+        "avg_ms": 1.1240656975915633,
+        "passed": true
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 1.32,
+        "ci": [
+          0.49004029949372585,
+          2.1499597005062743
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.089508,
+          1.046582
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5763357920004637,
+        "avg_ms": 1.0774724262059037,
+        "passed": true
+      },
+      {
+        "bot": "loose_aggressive",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 1.253,
+        "ci": [
+          0.4135788586900624,
+          2.0924211413099374
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.111836,
+          1.099237
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5692212080030004,
+        "avg_ms": 1.081130670748678,
+        "passed": true
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 6.665,
+        "ci": [
+          5.727620901868613,
+          7.6023790981313875
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.042508,
+          0.025452
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5212278749968391,
+        "avg_ms": 0.344399438727783,
+        "passed": true
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 6.446,
+        "ci": [
+          5.432977235292209,
+          7.4590227647077905
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.04417,
+          0.056431
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.39254770800471306,
+        "avg_ms": 0.3599291851851852,
+        "passed": true
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 5.949,
+        "ci": [
+          4.915627529948537,
+          6.982372470051462
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.122584,
+          0.085908
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.40710654099530075,
+        "avg_ms": 0.47215173000567223,
+        "passed": true
+      },
+      {
+        "bot": "pot_raiser_folder",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 6.496,
+        "ci": [
+          5.473905718216145,
+          7.518094281783856
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.037704,
+          0.043001
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.42325358300149674,
+        "avg_ms": 0.3594604123095309,
+        "passed": true
+      },
+      {
+        "bot": "benchmark",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 1.436,
+        "ci": [
+          0.8222477895907973,
+          2.0497522104092027
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.085724,
+          1.132437
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.40270054199936567,
+        "avg_ms": 1.1173449913644213,
+        "passed": true
+      },
+      {
+        "bot": "benchmark",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 1.005,
+        "ci": [
+          0.43525165104132046,
+          1.5747483489586793
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.371258,
+          1.151872
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5270296250018873,
+        "avg_ms": 1.1738537300307783,
+        "passed": true
+      },
+      {
+        "bot": "benchmark",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 0.813,
+        "ci": [
+          0.2902081592082767,
+          1.3357918407917233
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.107578,
+          1.064048
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.48558162500557955,
+        "avg_ms": 1.1096012516763523,
+        "passed": true
+      },
+      {
+        "bot": "benchmark",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 1.348,
+        "ci": [
+          0.7430989580566554,
+          1.9529010419433448
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.217038,
+          1.13839
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.520564167003613,
+        "avg_ms": 1.1413397861889627,
+        "passed": true
+      }
+    ],
+    "baselines": [
+      {
+        "bot": "random",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 8.3695,
+        "ci": [
+          7.017467107673214,
+          9.721532892326787
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.867494,
+          0.978988
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.8255297910000081,
+        "avg_ms": 1.023226202661208,
+        "passed": true
+      },
+      {
+        "bot": "random",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 8.4385,
+        "ci": [
+          7.098205218166313,
+          9.778794781833687
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.244974,
+          0.963886
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5552912909988663,
+        "avg_ms": 1.0908207450693939,
+        "passed": true
+      },
+      {
+        "bot": "random",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 7.6405,
+        "ci": [
+          6.262871591216163,
+          9.018128408783838
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.948427,
+          1.037666
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5565835419984069,
+        "avg_ms": 1.0499817539729253,
+        "passed": true
+      },
+      {
+        "bot": "random",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 7.513,
+        "ci": [
+          6.149464888471892,
+          8.876535111528108
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.948473,
+          0.952693
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.4956493749996298,
+        "avg_ms": 1.0347737766807028,
+        "passed": true
+      },
+      {
+        "bot": "always_half",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 11.53,
+        "ci": [
+          10.26667919623984,
+          12.793320803760158
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.852153,
+          0.794228
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5039516250035376,
+        "avg_ms": 0.9364749229188077,
+        "passed": true
+      },
+      {
+        "bot": "always_half",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 10.726,
+        "ci": [
+          9.434017364525062,
+          12.01798263547494
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.80688,
+          0.830449
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.49842629200429656,
+        "avg_ms": 0.9347876719412556,
+        "passed": true
+      },
+      {
+        "bot": "always_half",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 10.802,
+        "ci": [
+          9.514770666092605,
+          12.089229333907394
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.789589,
+          0.803188
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5003929170052288,
+        "avg_ms": 0.9312642524573203,
+        "passed": true
+      },
+      {
+        "bot": "always_half",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 10.572,
+        "ci": [
+          9.271822721433226,
+          11.872177278566772
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.764746,
+          0.828359
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5436613329948159,
+        "avg_ms": 0.9309343538113828,
+        "passed": true
+      },
+      {
+        "bot": "always_pot",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 8.368,
+        "ci": [
+          6.863452848564561,
+          9.87254715143544
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.978883,
+          1.028822
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.44350016599491937,
+        "avg_ms": 0.9893971204188482,
+        "passed": true
+      },
+      {
+        "bot": "always_pot",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 7.14,
+        "ci": [
+          5.639519867352963,
+          8.640480132647037
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.030936,
+          0.989264
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.5452248750007129,
+        "avg_ms": 0.9977816593886463,
+        "passed": true
+      },
+      {
+        "bot": "always_pot",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 5.81,
+        "ci": [
+          4.238976710925387,
+          7.381023289074612
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.077212,
+          1.057219
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.44449383299797773,
+        "avg_ms": 1.0127289012738854,
+        "passed": true
+      },
+      {
+        "bot": "always_pot",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 5.611,
+        "ci": [
+          4.090664802104365,
+          7.131335197895635
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          3.676916,
+          1.959423
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.44575879200419877,
+        "avg_ms": 1.5649543952412424,
+        "passed": true
+      },
+      {
+        "bot": "calling_station",
+        "seed": 1,
+        "result": "AGENT1_WIN",
+        "bb": 9.322,
+        "ci": [
+          8.466746367958182,
+          10.177253632041817
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.919822,
+          0.824254
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.7941253750032047,
+        "avg_ms": 1.0627257621189405,
+        "passed": true
+      },
+      {
+        "bot": "calling_station",
+        "seed": 7,
+        "result": "AGENT1_WIN",
+        "bb": 9.367,
+        "ci": [
+          8.481534547367655,
+          10.252465452632347
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.804442,
+          0.964524
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.974068541007,
+        "avg_ms": 1.0575071214392804,
+        "passed": true
+      },
+      {
+        "bot": "calling_station",
+        "seed": 21,
+        "result": "AGENT1_WIN",
+        "bb": 8.811,
+        "ci": [
+          7.9644937014292685,
+          9.65750629857073
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          1.544739,
+          1.542538
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 0.6078182920027757,
+        "avg_ms": 1.2635062468765617,
+        "passed": true
+      },
+      {
+        "bot": "calling_station",
+        "seed": 99,
+        "result": "AGENT1_WIN",
+        "bb": 9.62,
+        "ci": [
+          8.754019716846386,
+          10.485980283153612
+        ],
+        "errors": [
+          0,
+          0
+        ],
+        "thinking": [
+          0.832523,
+          0.840854
+        ],
+        "forfeited": false,
+        "empty": false,
+        "startup": 1.2821618329980993,
+        "avg_ms": 1.0318871814092954,
+        "passed": true
+      }
+    ]
+  },
+  "pooled": {
+    "before": {
+      "tight_passive": {
+        "bb": 0.20475,
+        "ci": [
+          -0.03802345532126686,
+          0.4475234553212668
+        ],
+        "worst_seed": -0.006,
+        "verdict": "CHOP"
+      },
+      "loose_aggressive": {
+        "bb": 0.53075,
+        "ci": [
+          0.12202591687569181,
+          0.9394740831243082
+        ],
+        "worst_seed": 0.002,
+        "verdict": "AGENT1_WIN"
+      },
+      "pot_raiser_folder": {
+        "bb": 0.618,
+        "ci": [
+          -0.18186560035737176,
+          1.4178656003573717
+        ],
+        "worst_seed": -0.761,
+        "verdict": "CHOP"
+      },
+      "benchmark": {
+        "bb": 0.183,
+        "ci": [
+          -0.052881937919288635,
+          0.4188819379192886
+        ],
+        "worst_seed": -0.28,
+        "verdict": "CHOP"
+      }
+    },
+    "after": {
+      "tight_passive": {
+        "bb": 0.82475,
+        "ci": [
+          0.578496215487819,
+          1.071003784512181
+        ],
+        "worst_seed": 0.523,
+        "verdict": "AGENT1_WIN"
+      },
+      "loose_aggressive": {
+        "bb": 1.55475,
+        "ci": [
+          1.1367377952836808,
+          1.9727622047163194
+        ],
+        "worst_seed": 1.253,
+        "verdict": "AGENT1_WIN"
+      },
+      "pot_raiser_folder": {
+        "bb": 6.389,
+        "ci": [
+          5.888031602747876,
+          6.889968397252124
+        ],
+        "worst_seed": 5.949,
+        "verdict": "AGENT1_WIN"
+      },
+      "benchmark": {
+        "bb": 1.1505,
+        "ci": [
+          0.8610503038841717,
+          1.4399496961158285
+        ],
+        "worst_seed": 0.813,
+        "verdict": "AGENT1_WIN"
+      }
+    }
+  }
+}

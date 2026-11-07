@@ -56,9 +56,11 @@ def _fallback(legal):
 
 def new_half(config: AgentConfig, memory: dict) -> None:
     try:
-        memory.update(hands_played=0, used=0.0, bank=min(8.0, config.time_bank_seconds),
+        memory.update(hands_played=0, used=0.0, bank=min(3.3, config.time_bank_seconds),
                       num_hands=config.num_hands, rng=random.Random(71823),
-                      opp_actions=0, opp_raises=0, opp_folds=0, histories={})
+                      opp_actions=0, opp_raises=0, opp_folds=0, histories={}, street_stats={},
+                      faced_raises=0, folded_to_raise=0, faced_reraises=0, folded_to_reraise=0, showdowns=0,
+                      showdown_strength=0.0, weak_showdowns=0, raised_showdowns=0)
     except Exception:
         return _fallback((Action.CHECK_CALL, Action.FOLD))
 
@@ -74,73 +76,109 @@ def _preflop(cards):
             score -= 0.22 * (n - 2)
     score += sum(0.10 for n in suits.values() if n >= 2)
     score -= sum(0.06 * (n - 2) for n in suits.values() if n > 2)
+    score += sum(0.04 for c in cards if c >> 2 == 8 and suits[c & 3] >= 2)
     unique = sorted(ranks)
-    score += sum(0.035 if y - x == 1 else 0.015 if y - x == 2 else 0
+    score += sum(0.03 if y - x == 1 else 0.012 if y - x == 2 else 0
                  for i, x in enumerate(unique) for y in unique[i + 1:])
     return score
+
+
+def _decide(obs, memory, started):
+    legal = obs.legal_actions
+    raises = (Action.RAISE_HALF, Action.RAISE_POT)
+    context = {"history": tuple(obs.action_history), "hole": tuple(obs.hole_cards),
+               "street": obs.street, "last_action": Action.CHECK_CALL}
+    memory.setdefault("histories", {})[obs.hand_index] = context
+    rate = (memory.get("opp_raises", 0) + 3) / (memory.get("opp_actions", 0) + 12)
+    folds = (memory.get("folded_to_raise", 0) + 3) / (memory.get("faced_raises", 0) + 8)
+    reraise_folds = (memory.get("folded_to_reraise", 0) + 1) / (memory.get("faced_reraises", 0) + 4)
+    bluff_rate = (memory.get("weak_showdowns", 0) + 1) / (memory.get("raised_showdowns", 0) + 6)
+    if obs.street != Street.PREFLOP:
+        stats = memory.get("street_stats", {}).get(obs.street, [0, 0, 0, 0])
+        rate = (stats[1] + 2) / (stats[0] + 8)
+        folds = (stats[3] + 3) / (stats[2] + 8)
+    rng = memory["rng"]
+    if obs.street == Street.PREFLOP:
+        strength = _preflop(obs.hole_cards)
+        pressure = obs.to_call / max(1, obs.big_blind)
+        threshold = 0.34 + min(0.24, pressure * 0.012)
+        if rate > 0.60:
+            threshold -= 0.09
+        if pressure > 1 and reraise_folds > 0.60 and strength > 0.30:
+            action = Action.RAISE_POT
+        elif pressure > 1 and strength < threshold:
+            action = Action.FOLD
+        elif strength > (0.77 if pressure > 2 else 0.64):
+            action = Action.RAISE_POT
+        elif pressure <= 1 and (strength > 0.48 and folds > 0.45 or folds > 0.58):
+            action = Action.RAISE_HALF
+        elif pressure > 1 and folds > 0.62 and strength > 0.36 and rng.random() < 0.4:
+            action = Action.RAISE_POT
+        else:
+            action = Action.CHECK_CALL
+    else:
+        left = memory.get("bank", 3.3) - memory.get("used", 0.0)
+        remaining = max(1, memory.get("num_hands", 1000) - obs.hand_index)
+        # A conservative internal budget leaves room for HTTP/JSON overhead.
+        budget = min(0.00135, max(0.0, (left - 0.35) / (remaining * 2.8)))
+        if left < 0.4:
+            budget = 0.0
+        deadline = started + budget
+        known = set(obs.hole_cards) | set(obs.board)
+        deck = [c for c in range(36) if c not in known]
+        missing = 5 - len(obs.board)
+        wins = 0.0
+        samples = 0
+        hero_river = omaha_score(obs.hole_cards, obs.board) if not missing else None
+        for _ in range(40):
+            if time.perf_counter() >= deadline:
+                break
+            draw = rng.sample(deck, 5 + missing)
+            board = tuple(obs.board) + tuple(draw[5:])
+            hero = hero_river if hero_river is not None else omaha_score(obs.hole_cards, board)
+            villain = omaha_score(draw[:5], board)
+            wins += (hero > villain) + 0.5 * (hero == villain)
+            samples += 1
+        equity = (wins + 1) / (samples + 2) if samples else 0.42
+        raised = any(not h.is_me and h.street == obs.street and h.action in raises
+                     for h in obs.action_history)
+        raw_equity = equity
+        if raised:
+            # A rare bet is evidence of a selected value range. Maniacs retain
+            # almost their entire range; weak revealed raises soften the prior.
+            selection = max(0.0, 1.0 - rate / 0.62)
+            discount = (max(0.02, 0.72 - rate) if obs.street == Street.RIVER else 0.32 * selection)
+            discount *= max(0.5, 1.15 - bluff_rate)
+            equity = max(0.0, (equity - discount) / (1.0 - discount))
+        odds = obs.to_call / max(1, obs.pot + obs.to_call)
+        margin = 0.012 if rate > 0.60 or bluff_rate > 0.38 else 0.035
+        if obs.to_call and equity < odds + margin:
+            action = Action.FOLD
+        elif raised and reraise_folds > 0.60 and raw_equity > 0.25 and obs.opp_stack > 0:
+            action = Action.RAISE_POT
+        elif equity > (0.62 if rate > 0.60 else 0.67):
+            action = Action.RAISE_POT
+        elif equity > (0.57 if rate > 0.60 else 0.59) and not raised:
+            action = Action.RAISE_HALF
+        else:
+            action = Action.CHECK_CALL
+        # Half-pot bluffs need only one third folds to break even. Avoid
+        # bluffing players who call often, or firing into an all-in stack.
+        if (Action.RAISE_HALF in legal and folds > 0.37 and raw_equity < 0.48
+                and obs.opp_stack > obs.pot * 0.4 and obs.raises_this_street < 2):
+            chance = min(0.75, (folds - 0.33) * 2.5)
+            if (not raised or folds > 0.60) and rng.random() < chance:
+                action = Action.RAISE_HALF if not raised else Action.RAISE_POT
+    action = action if action in legal else _fallback(legal)
+    context["last_action"] = action
+    return action
 
 
 def choose_action(obs: Observation, memory: dict) -> Action:
     try:
         started = time.perf_counter()
         try:
-            legal = obs.legal_actions
-            # Save the longest observed history; HandResult has no action history.
-            memory.setdefault("histories", {})[obs.hand_index] = tuple(obs.action_history)
-            rate = (memory.get("opp_raises", 0) + 2) / (memory.get("opp_actions", 0) + 8)
-            if obs.street == Street.PREFLOP:
-                strength = _preflop(obs.hole_cards)
-                # Large reraises need a stronger range, even against maniacs.
-                pressure = obs.to_call / max(1, obs.big_blind)
-                threshold = 0.34 + min(0.24, pressure * 0.012)
-                if rate > 0.65:
-                    threshold -= 0.09
-                if pressure > 1 and strength < threshold:
-                    action = Action.FOLD
-                elif strength > (0.77 if pressure > 2 else 0.63):
-                    action = Action.RAISE_POT
-                else:
-                    action = Action.CHECK_CALL
-            else:
-                left = memory.get("bank", 8.0) - memory.get("used", 0.0)
-                remaining = max(1, memory.get("num_hands", 1000) - obs.hand_index)
-                # Reserve time for parsing/HTTP overhead and later decisions.
-                budget = min(0.0025, max(0.0, (left - 0.8) / (remaining * 3.5)))
-                if left < 0.9:
-                    budget = 0.0
-                deadline = started + budget
-                known = set(obs.hole_cards) | set(obs.board)
-                deck = [c for c in range(36) if c not in known]
-                missing = 5 - len(obs.board)
-                rng = memory["rng"]
-                wins = 0.0
-                samples = 0
-                hero_river = omaha_score(obs.hole_cards, obs.board) if not missing else None
-                for _ in range(40):
-                    if time.perf_counter() >= deadline:
-                        break
-                    draw = rng.sample(deck, 5 + missing)
-                    board = tuple(obs.board) + tuple(draw[5:])
-                    hero = hero_river if hero_river is not None else omaha_score(obs.hole_cards, board)
-                    villain = omaha_score(draw[:5], board)
-                    wins += (hero > villain) + 0.5 * (hero == villain)
-                    samples += 1
-                equity = (wins + 1) / (samples + 2) if samples else 0.42
-                raised = any(not h.is_me and h.street == obs.street and
-                             h.action in (Action.RAISE_HALF, Action.RAISE_POT)
-                             for h in obs.action_history)
-                if raised:
-                    equity *= 0.98 if rate > 0.65 else 0.91 if rate > 0.3 else 0.83
-                odds = obs.to_call / max(1, obs.pot + obs.to_call)
-                if obs.to_call and equity < odds + (0.015 if rate > 0.65 else 0.04):
-                    action = Action.FOLD
-                elif equity > (0.62 if rate > 0.65 else 0.68):
-                    action = Action.RAISE_POT
-                elif equity > 0.58 and not raised:
-                    action = Action.RAISE_HALF
-                else:
-                    action = Action.CHECK_CALL
-            return action if action in legal else _fallback(legal)
+            return _decide(obs, memory, started)
         finally:
             memory["used"] = memory.get("used", 0.0) + time.perf_counter() - started
     except Exception:
@@ -150,17 +188,54 @@ def choose_action(obs: Observation, memory: dict) -> Action:
 def on_hand_end(result: HandResult, memory: dict) -> None:
     try:
         started = time.perf_counter()
-        history = memory.setdefault("histories", {}).pop(result.hand_index, ())
-        opponent = [h for h in history if not h.is_me]
-        memory["opp_actions"] = memory.get("opp_actions", 0) + len(opponent)
-        memory["opp_raises"] = memory.get("opp_raises", 0) + sum(
-            h.action in (Action.RAISE_HALF, Action.RAISE_POT) for h in opponent)
-        # A terminal opponent fold is absent from our final observation.
-        memory["opp_folds"] = memory.get("opp_folds", 0) + int(
-            not result.went_to_showdown and result.winner == "me")
-        memory["hands_played"] = memory.get("hands_played", 0) + 1
-        memory["opp_fold_rate"] = memory["opp_folds"] / memory["hands_played"]
-        memory["used"] = memory.get("used", 0.0) + time.perf_counter() - started
+        try:
+            ctx = memory.setdefault("histories", {}).pop(result.hand_index, None)
+            raises = (Action.RAISE_HALF, Action.RAISE_POT)
+            if ctx is not None:
+                history = [(h.is_me, h.action, h.street) for h in ctx["history"]]
+                history.append((True, ctx["last_action"], ctx["street"]))
+                # The final response to our bet is never in our observation.
+                if ctx["last_action"] in raises:
+                    final = Action.FOLD if not result.went_to_showdown and result.winner == "me" else Action.CHECK_CALL
+                    history.append((False, final, ctx["street"]))
+                for i, (is_me, action, street) in enumerate(history):
+                    if is_me:
+                        continue
+                    memory["opp_actions"] += 1
+                    memory["opp_raises"] += int(action in raises)
+                    stats = memory["street_stats"].setdefault(street, [0, 0, 0, 0])
+                    stats[0] += 1
+                    stats[1] += int(action in raises)
+                    if i and history[i - 1][0] and history[i - 1][1] in raises:
+                        memory["faced_raises"] += 1
+                        memory["folded_to_raise"] += int(action == Action.FOLD)
+                        stats[2] += 1
+                        stats[3] += int(action == Action.FOLD)
+                        if any(not h[0] and h[1] in raises and h[2] == street for h in history[:i - 1]):
+                            memory["faced_reraises"] += 1
+                            memory["folded_to_reraise"] += int(action == Action.FOLD)
+                had_raise = any(not h[0] and h[1] in raises for h in history)
+                if result.opp_hole and len(result.board) == 5:
+                    memory["showdowns"] += 1
+                    # Rank a revealed hand against random legal holdings. Keep
+                    # this small, and independent of the decision RNG stream.
+                    known = set(result.opp_hole) | set(result.board) | set(ctx["hole"])
+                    deck = [c for c in range(36) if c not in known]
+                    score = omaha_score(result.opp_hole, result.board)
+                    show_rng = random.Random(result.hand_index + 9187)
+                    strength = 0.0
+                    for _ in range(8):
+                        other = omaha_score(show_rng.sample(deck, 5), result.board)
+                        strength += (score > other) + 0.5 * (score == other)
+                    strength /= 8
+                    memory["showdown_strength"] += strength
+                    if had_raise:
+                        memory["raised_showdowns"] += 1
+                        memory["weak_showdowns"] += int(strength < 0.50)
+            memory["opp_folds"] += int(not result.went_to_showdown and result.winner == "me")
+            memory["hands_played"] += 1
+        finally:
+            memory["used"] = memory.get("used", 0.0) + time.perf_counter() - started
     except Exception:
         return _fallback((Action.CHECK_CALL, Action.FOLD))
 

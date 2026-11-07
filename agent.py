@@ -48,6 +48,8 @@ AGENT_NAME = "UjjwalBot"
 import random
 import time
 from collections import Counter
+from itertools import combinations
+from evaluator import get_table
 
 
 def _fallback(legal):
@@ -56,7 +58,7 @@ def _fallback(legal):
 
 def new_half(config: AgentConfig, memory: dict) -> None:
     try:
-        memory.update(hands_played=0, used=0.0, bank=min(3.3, config.time_bank_seconds),
+        memory.update(hands_played=0, used=0.0, bank=min(5.8, config.time_bank_seconds),
                       num_hands=config.num_hands, rng=random.Random(71823),
                       opp_actions=0, opp_raises=0, opp_folds=0, histories={}, street_stats={},
                       faced_raises=0, folded_to_raise=0, faced_reraises=0, folded_to_reraise=0, showdowns=0,
@@ -83,11 +85,52 @@ def _preflop(cards):
     return score
 
 
+def _simulation_budget(obs, memory):
+    """Finish the usual 40 samples while affordable; reduce work near the cap.
+
+    The five-second internal cutoff leaves room below the six-second stress
+    limit for cheap decisions and HTTP/JSON overhead. Smaller configured
+    banks and faster burn rates reduce the budget earlier.
+    """
+    used = memory.get("used", 0.0)
+    left = memory.get("bank", 5.8) - used
+    remaining = max(1, memory.get("num_hands", 1000) - obs.hand_index)
+    budget = min(0.0019, max(0.0, (left - 0.8) / (remaining * 2.8)))
+    if left <= 0.8 or used >= 5.0:
+        return 0.0, 0
+    if used >= 4.8 or left < 1.0:
+        return min(budget, 0.0004), 8
+    if used >= 4.5 or left < 1.3:
+        return min(budget, 0.001), 24
+    return budget, 40
+
+
+def _static_equity(hole, board):
+    """No sampling: read made-hand strength from the warmed five-card table.
+
+    These conservative estimates are only used when the governor stops MC.
+    Exactly two hole cards and three visible board cards must play.
+    """
+    table = get_table()
+    hole_masks = [(1 << a) | (1 << b) for a, b in combinations(hole, 2)]
+    board_masks = [(1 << a) | (1 << b) | (1 << c)
+                   for a, b, c in combinations(board, 3)]
+    best = max(table[h | b] for h in hole_masks for b in board_masks)
+    estimates = {
+        3: (0.33, 0.40, 0.49, 0.63, 0.72, 0.85, 0.94, 0.99, 0.995),
+        4: (0.24, 0.31, 0.45, 0.62, 0.70, 0.83, 0.94, 0.99, 0.995),
+        5: (0.10, 0.22, 0.40, 0.60, 0.68, 0.82, 0.94, 0.99, 0.995),
+    }
+    return estimates[len(board)][best >> 20]
+
+
 def _decide(obs, memory, started):
     legal = obs.legal_actions
     raises = (Action.RAISE_HALF, Action.RAISE_POT)
+    prior = memory.setdefault("histories", {}).get(obs.hand_index, {})
     context = {"history": tuple(obs.action_history), "hole": tuple(obs.hole_cards),
-               "street": obs.street, "last_action": Action.CHECK_CALL}
+               "street": obs.street, "last_action": Action.CHECK_CALL,
+               "equities": prior.get("equities", {})}
     memory.setdefault("histories", {})[obs.hand_index] = context
     rate = (memory.get("opp_raises", 0) + 3) / (memory.get("opp_actions", 0) + 12)
     folds = (memory.get("folded_to_raise", 0) + 3) / (memory.get("faced_raises", 0) + 8)
@@ -117,20 +160,15 @@ def _decide(obs, memory, started):
         else:
             action = Action.CHECK_CALL
     else:
-        left = memory.get("bank", 3.3) - memory.get("used", 0.0)
-        remaining = max(1, memory.get("num_hands", 1000) - obs.hand_index)
-        # A conservative internal budget leaves room for HTTP/JSON overhead.
-        budget = min(0.00135, max(0.0, (left - 0.35) / (remaining * 2.8)))
-        if left < 0.4:
-            budget = 0.0
+        budget, sample_limit = _simulation_budget(obs, memory)
         deadline = started + budget
         known = set(obs.hole_cards) | set(obs.board)
         deck = [c for c in range(36) if c not in known]
         missing = 5 - len(obs.board)
         wins = 0.0
         samples = 0
-        hero_river = omaha_score(obs.hole_cards, obs.board) if not missing else None
-        for _ in range(40):
+        hero_river = omaha_score(obs.hole_cards, obs.board) if not missing and sample_limit else None
+        for _ in range(sample_limit):
             if time.perf_counter() >= deadline:
                 break
             draw = rng.sample(deck, 5 + missing)
@@ -139,7 +177,14 @@ def _decide(obs, memory, started):
             villain = omaha_score(draw[:5], board)
             wins += (hero > villain) + 0.5 * (hero == villain)
             samples += 1
-        equity = (wins + 1) / (samples + 2) if samples else 0.42
+        cache_key = tuple(obs.board)
+        if samples:
+            equity = (wins + 1) / (samples + 2)
+            context["equities"][cache_key] = equity
+        elif cache_key in context["equities"]:
+            equity = context["equities"][cache_key]
+        else:
+            equity = _static_equity(obs.hole_cards, obs.board)
         raised = any(not h.is_me and h.street == obs.street and h.action in raises
                      for h in obs.action_history)
         raw_equity = equity
@@ -215,7 +260,8 @@ def on_hand_end(result: HandResult, memory: dict) -> None:
                             memory["faced_reraises"] += 1
                             memory["folded_to_reraise"] += int(action == Action.FOLD)
                 had_raise = any(not h[0] and h[1] in raises for h in history)
-                if result.opp_hole and len(result.board) == 5:
+                if (result.opp_hole and len(result.board) == 5
+                        and memory.get("used", 0.0) < min(4.8, memory.get("bank", 5.8) - 1.0)):
                     memory["showdowns"] += 1
                     # Rank a revealed hand against random legal holdings. Keep
                     # this small, and independent of the decision RNG stream.

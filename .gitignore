@@ -1,0 +1,22 @@
+# Local Python environment and caches
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local match reports and debug output
+*.log
+*.prof
+*.jsonl
+/logs/
+/out*.json
+/result*.json
+/match-*.json
+/match_*.json
+/judge-*.json
+/judge_*.json
+/results/
+/local_results/
+/local_opponents/results/
+/local_opponents/logs/
+*.report.txt

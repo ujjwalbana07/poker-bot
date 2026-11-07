@@ -39,7 +39,7 @@ from game import Action, AgentConfig, HandResult, Observation, Street
 warmup()
 
 # rename as your team/bot's name
-PARTICIPANT = "YOUR EXACT TEAM NAME"
+PARTICIPANT = "Byte Me"
 AGENT_NAME = "UjjwalBot"
 
 
@@ -58,7 +58,8 @@ def _fallback(legal):
 
 def new_half(config: AgentConfig, memory: dict) -> None:
     try:
-        memory.update(hands_played=0, used=0.0, bank=min(5.8, config.time_bank_seconds),
+        memory.update(hands_played=0, used=0.0, bank=min(5.8, config.time_bank_seconds), reserve_mode=False,
+                      sampling_bank=min(5.8, config.time_bank_seconds),
                       num_hands=config.num_hands, rng=random.Random(71823),
                       opp_actions=0, opp_raises=0, opp_folds=0, histories={}, street_stats={},
                       faced_raises=0, folded_to_raise=0, faced_reraises=0, folded_to_reraise=0, showdowns=0,
@@ -86,21 +87,32 @@ def _preflop(cards):
 
 
 def _simulation_budget(obs, memory):
-    """Finish the usual 40 samples while affordable; reduce work near the cap.
+    """Keep normal sampling, but reserve more when measured burn is too fast.
 
-    The five-second internal cutoff leaves room below the six-second stress
-    limit for cheap decisions and HTTP/JSON overhead. Smaller configured
-    banks and faster burn rates reduce the budget earlier.
+    After a warmup, forecast total callback cost from completed hands.
+    Expensive halves switch permanently to a 3.5 s callback cutoff, leaving
+    room for the request overhead that is charged outside these callbacks.
+    Healthy halves retain their original five-second cutoff and deadlines.
     """
     used = memory.get("used", 0.0)
+    total = max(1, memory.get("num_hands", 1000))
+    completed = min(total, obs.hand_index + 1)
+    if not memory.get("reserve_mode", False) and completed >= min(200, max(50, total // 5)):
+        progress = completed / total
+        forecast = used / progress
+        # Late in a half, less future work remains and the forecast matters less.
+        if forecast > 4.5 + 1.5 * progress ** 3:
+            memory["reserve_mode"] = True
+            memory["bank"] = min(memory.get("bank", 5.8), 4.3)
     left = memory.get("bank", 5.8) - used
-    remaining = max(1, memory.get("num_hands", 1000) - obs.hand_index)
-    budget = min(0.0019, max(0.0, (left - 0.8) / (remaining * 2.8)))
-    if left <= 0.8 or used >= 5.0:
+    sampling_left = memory.get("sampling_bank", 5.8) - used
+    remaining = max(1, total - obs.hand_index)
+    budget = min(0.0019, max(0.0, (sampling_left - 0.8) / (remaining * 2.8)))
+    if left <= 0.8:
         return 0.0, 0
-    if used >= 4.8 or left < 1.0:
+    if left < 0.9:
         return min(budget, 0.0004), 8
-    if used >= 4.5 or left < 1.3:
+    if left < 1.0:
         return min(budget, 0.001), 24
     return budget, 40
 
@@ -161,15 +173,18 @@ def _decide(obs, memory, started):
             action = Action.CHECK_CALL
     else:
         budget, sample_limit = _simulation_budget(obs, memory)
-        deadline = started + budget
         known = set(obs.hole_cards) | set(obs.board)
         deck = [c for c in range(36) if c not in known]
         missing = 5 - len(obs.board)
         wins = 0.0
         samples = 0
         hero_river = omaha_score(obs.hole_cards, obs.board) if not missing and sample_limit else None
+        # Setup/occasional scheduling delay must not masquerade as an empty
+        # bank. Only healthy mode gets a small bounded minimum sample batch.
+        deadline = time.perf_counter() + budget
+        minimum_samples = 8 if sample_limit == 40 and budget > 0 else 0
         for _ in range(sample_limit):
-            if time.perf_counter() >= deadline:
+            if samples >= minimum_samples and time.perf_counter() >= deadline:
                 break
             draw = rng.sample(deck, 5 + missing)
             board = tuple(obs.board) + tuple(draw[5:])
@@ -261,7 +276,7 @@ def on_hand_end(result: HandResult, memory: dict) -> None:
                             memory["folded_to_reraise"] += int(action == Action.FOLD)
                 had_raise = any(not h[0] and h[1] in raises for h in history)
                 if (result.opp_hole and len(result.board) == 5
-                        and memory.get("used", 0.0) < min(4.8, memory.get("bank", 5.8) - 1.0)):
+                        and memory.get("used", 0.0) < memory.get("bank", 5.8) - 0.9):
                     memory["showdowns"] += 1
                     # Rank a revealed hand against random legal holdings. Keep
                     # this small, and independent of the decision RNG stream.
